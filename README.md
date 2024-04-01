@@ -23,11 +23,13 @@ This is a template for a Discord bot created by Axel00x. The template provides a
    ```
 2. Make sure you have Python 3.x installed. You can download Python from here.
 3. Install project dependencies by running the following command in the project directory:
-  ```bash
-  pip install -r requirements.txt
-  ```
-4. Configure the bot by editing the config.py file with your credentials and settings.
-5. Start the bot by running the following command in the project directory:
+   
+     ```bash
+     pip install -r requirements.txt
+     ```
+5. Configure the bot by editing the config.py file with your credentials and settings.
+6. Start the bot by running the following command in the project directory:
+   
      ```bash
      python bot.py
      ```
