@@ -87,13 +87,13 @@ embed.add_field(name="End of maintenance:", value="12/24h", inline=True)
 embed.set_thumbnail(url="https://cdn.icon-icons.com/icons2/209/PNG/256/maintenance256_24835.png")
 
 # Aggiungere un footer all'embed (opzionale)
-embed.set_footer(text="Powered by Lunabot 2.0")
+embed.set_footer(text="Powered by bot")
     
 @client.tree.command(name="vote", description="vote me on top gg")
 async def vote(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
     
-os.system("title Hydra Mass DM")
+os.system("title Bot")
 client.run(token)
 
 input()
