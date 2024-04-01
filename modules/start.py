@@ -22,7 +22,7 @@ except:
     from discord.ext import commands
     
 
-token = "MTIyNDA3NDgwNTY0OTg3MDkxOQ.GUoCph.5Z61-NVKCmvMsQpdx3be97evfvgIS_4xMYQ-tM"
+token = ""
 prefix = "r."
 
 music = DiscordUtils.Music()
