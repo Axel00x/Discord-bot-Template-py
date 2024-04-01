@@ -37,4 +37,4 @@ This is a template for a Discord bot created by Axel00x. The template provides a
 Contributions and suggestions to improve this template are welcome. If you have ideas for new features or improvements, feel free to create a new issue or submit a pull request.
 
 ## Contact
-For questions or support, you can contact Axel00x on GitHub or on Discord (Axel00x#0001).
+For questions or support, you can contact Axel00x on GitHub or on Discord (axel00x).
