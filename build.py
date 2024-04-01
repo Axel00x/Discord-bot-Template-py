@@ -110,3 +110,5 @@ Default guild ID: {guildid}
 
 if __name__ == '__main__':
     main()
+    
+input()

