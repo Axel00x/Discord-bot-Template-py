@@ -11,8 +11,7 @@ This is a template for a Discord bot created by Axel00x. The template provides a
 
 ## Requirements
 
-- Python 3.x
-- Discord.py
+[requirements.txt](./requirements.txt)
 
 ## Installation
 
