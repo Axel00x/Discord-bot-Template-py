@@ -18,7 +18,7 @@ This is a template for a Discord bot created by Axel00x. The template provides a
 1. Clone this repository to your computer:
 
    ```bash
-   git clone https://github.com/Axel00x/bot-template.git
+   git clone https://github.com/Axel00x/Discord-bot-Template-py
    ```
 2. Make sure you have Python 3.x installed. You can download Python from here.
 3. Install project dependencies by running the following command in the project directory:
