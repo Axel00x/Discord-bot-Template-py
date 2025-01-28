@@ -31,7 +31,7 @@ client = commands.Bot(command_prefix=prefix, intents=discord.Intents.all())
 client.remove_command("help")
 
 help_menu = f"""
-Available commands for the Hydra Mass DM bot :
+Available commands for the bot :
 
 **{prefix}help** - Show this message.
 
